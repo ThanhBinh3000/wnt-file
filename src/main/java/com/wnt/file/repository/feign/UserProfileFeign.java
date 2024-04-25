@@ -1,6 +1,6 @@
 package com.wnt.file.repository.feign;
 
-import com.wnt.file.table.system.BaseResponse;
+import com.wnt.file.response.BaseResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
