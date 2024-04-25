@@ -148,7 +148,7 @@ public class FileController {
 	}
 
 	@ApiOperation(value = "Upload file lên server và không lưu db", response = List.class)
-	@PostMapping(value = "/upload-attachment")
+	@PostMapping(value = "/upload-file-only")
 	public ResponseEntity<Object> uploadFileOnly(@ModelAttribute FileDto request) {
 		FileDto result = minioService.uploadFile(request);
 		return ResponseEntity.ok().body(result);
