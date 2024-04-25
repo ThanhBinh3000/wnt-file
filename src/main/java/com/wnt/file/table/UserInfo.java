@@ -2,8 +2,8 @@ package com.wnt.file.table;
 import java.sql.Timestamp;
 import java.util.Set;
 
-import javax.persistence.*;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity

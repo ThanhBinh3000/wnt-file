@@ -1,13 +1,14 @@
 package com.wnt.file.repository;
 
+import java.io.Serializable;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import feign.Param;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.repository.PagingAndSortingRepository;
 
 @NoRepositoryBean
-public interface BaseRepository<E,PK> extends PagingAndSortingRepository<E,PK>,JpaSpecificationExecutor<E>
+public interface BaseRepository<E, R, PK extends Serializable> extends CrudRepository<E, PK>
 {
-	List<E> findAll();
+    List<E> searchList(@Param("param") R param);
 }

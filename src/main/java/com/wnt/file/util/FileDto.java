@@ -2,10 +2,10 @@ package com.wnt.file.util;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategy.LowerCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FileDto implements Serializable {
 

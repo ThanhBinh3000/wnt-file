@@ -2,30 +2,11 @@
 spring:
   application:
     name: wnt-file
-  datasource:
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://10.0.14.40;database=WebNTDB
-    username: WebNTDB
-    password: 123456a@
-    platform: mssql
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: none
-#  profiles:
-#    active: prod
-#  cloud:
-#    config:
-#      uri: http://10.0.13.41:30004
-#      label: latest
-#      username: admin
-#      password: admin123
-minio:
-  access:
-    name: minioadmin
-    secret: minioadmin
-  url: http://10.0.13.42:9000/
-  default:
-    folder: /
-  buckek:
-    name: webnhathuoc
+  profiles:
+    active: prod
+  cloud:
+    config:
+      uri: http://10.0.13.41:30004
+      label: latest
+      username: ENCL(Bq7G/JTejfXoJCk8nDp6iw==)
+      password: ENCL(r8wZZemi/0rdGJOBDoPlFw==)

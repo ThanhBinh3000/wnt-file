@@ -2,27 +2,35 @@ package com.wnt.file.table;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "FILE_DINH_KEM")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "FileDinhKem")
 @Data
 public class FileDinhKem {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FILE_DINH_KEM_SEQ")
-	@SequenceGenerator(sequenceName = "FILE_DINH_KEM_SEQ", allocationSize = 1, name = "FILE_DINH_KEM_SEQ")
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
+	@Column(name="Id")
 	Long id;
+	@Column(name="FileName")
 	String fileName;
+	@Column(name="FileSize")
 	String fileSize;
+	@Column(name="FileUrl")
 	String fileUrl;
+	@Column(name="FileType")
 	String fileType;
+	@Column(name="DataType")
 	String dataType;
+	@Column(name="DataId")
 	Long dataId;
+	@Column(name="CreateDate")
 	Date createDate;
 }

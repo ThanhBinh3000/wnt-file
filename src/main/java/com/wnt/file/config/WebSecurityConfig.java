@@ -1,71 +1,57 @@
 package com.wnt.file.config;
 
+import com.wnt.file.jwt.JwtFilter;
+import com.wnt.file.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.netflix.ribbon.proxy.annotation.Http.HttpMethod;
-import com.wnt.file.jwt.JWTAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-
-	@Bean
-	public JWTAuthenticationFilter jwtAuthenticationFilter() {
-		return new JWTAuthenticationFilter();
-	}
-
-	@Bean(BeanIds.AUTHENTICATION_MANAGER)
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		// Get AuthenticationManager bean
-		return super.authenticationManagerBean();
-	}
+public class WebSecurityConfig {
+	@Autowired
+	private JwtFilter jwtFilter;
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	@Autowired
+	private UserService userService;
 
 	@Bean
-	public RestAuthenticationEntryPoint restServicesEntryPoint() {
-		return new RestAuthenticationEntryPoint();
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
+				.authorizeRequests(authz -> authz
+						.requestMatchers("/actuator/**","/swagger-ui/**", "/api-docs/**").permitAll()
+						.anyRequest().authenticated()
+				)
+				.csrf(AbstractHttpConfigurer::disable)
+				.userDetailsService((UserDetailsService) userService)
+				.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+				.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+		// Add a filter to validate the tokens with every request
+		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		return http.build();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
 	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		// Password encoder, để Spring Security sử dụng mã hóa mật khẩu người dùng
 		return new BCryptPasswordEncoder();
 	}
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		
-	}
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		//http.csrf().ignoringAntMatchers("/**");
-		  
-		http.httpBasic().authenticationEntryPoint(restServicesEntryPoint());
-		http.authorizeRequests()
-        .antMatchers("/file", "/file/**")
-        .permitAll()
-        .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security",
-				"/swagger-ui.html", "/webjars/**","/actuator/**","/file", "/file/**")
-		.permitAll()
-        .anyRequest()
-        .authenticated().and().csrf().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-		http.cors();
-	}
 }

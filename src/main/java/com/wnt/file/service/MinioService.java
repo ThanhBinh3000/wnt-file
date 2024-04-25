@@ -1,11 +1,10 @@
 package com.wnt.file.service;
 
 import com.wnt.file.table.FileDinhKem;
-import io.minio.GetObjectArgs;
-import io.minio.ListObjectsArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.Result;
+import io.minio.*;
+import io.minio.errors.*;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +17,8 @@ import com.wnt.file.util.FileDto;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -124,6 +125,25 @@ public class MinioService {
             zipOutputStream.close();
         }
         return baos.toByteArray();
+    }
+
+    public Boolean deleteFile(List<DeleteObject> objects)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        try {
+            Iterable<Result<DeleteError>> results =
+                    minioClient.removeObjects(
+                            RemoveObjectsArgs.builder().bucket(bucketName).objects(objects).build());
+            for (Result<DeleteError> result : results) {
+                DeleteError error = result.get();
+                System.out.println(
+                        "Error in deleting object " + error.objectName() + "; " + error.message());
+                return false;
+            }
+        } catch (MinioException e) {
+            System.out.println("Error occurred: " + e);
+            return false;
+        }
+        return true;
     }
 
     @PostConstruct

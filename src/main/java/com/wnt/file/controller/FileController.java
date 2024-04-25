@@ -9,8 +9,10 @@ import com.wnt.file.enums.EnumResponse;
 import com.wnt.file.response.BaseResponse;
 import com.wnt.file.secification.FileDinhKemSpecification;
 
+import io.minio.messages.DeleteObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.IOUtils;
@@ -24,14 +26,16 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import static org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -81,6 +85,7 @@ public class FileController {
     	return ResponseEntity.ok().body(result);
     }
 
+
     @ApiOperation(value = "Lấy danh sách file", response = List.class)
     @PostMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
@@ -90,7 +95,7 @@ public class FileController {
 		try {
 
 			List<FileDinhKem> dataPage = fileDinhKemRepository
-					.findAll(FileDinhKemSpecification.buildSearchQuery(objReq));
+					.searchList(objReq);
 
 			resp.setData(dataPage);
 			resp.setStatusCode(EnumResponse.RESP_SUCC.getValue());
@@ -114,7 +119,7 @@ public class FileController {
 		try {
 
 			List<FileDinhKem> dataPage = fileDinhKemRepository
-					.findAll(FileDinhKemSpecification.buildSearchQuery(objReq));
+					.searchList(objReq);
 
 			if (CollectionUtils.isEmpty(dataPage))
 				return ResponseEntity.ok(resp);
@@ -140,5 +145,19 @@ public class FileController {
 		}
 
 		return ResponseEntity.ok(resp);
+	}
+
+	@ApiOperation(value = "Upload file lên server và không lưu db", response = List.class)
+	@PostMapping(value = "/upload-attachment")
+	public ResponseEntity<Object> uploadFileOnly(@ModelAttribute FileDto request) {
+		FileDto result = minioService.uploadFile(request);
+		return ResponseEntity.ok().body(result);
+	}
+
+	@ApiOperation(value = "Delete file", response = List.class)
+	@PostMapping(value = "/delete")
+	public ResponseEntity<Object> deleteFile(@ModelAttribute List<DeleteObject> request) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+		Boolean result = minioService.deleteFile(request);
+		return ResponseEntity.ok().body(result);
 	}
 }

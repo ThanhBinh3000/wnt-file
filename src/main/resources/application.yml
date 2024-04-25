@@ -50,3 +50,9 @@ management:
       application: ${spring.application.name}
 
 #Logging
+logging:
+  file:
+    path: /app/log
+  logstash:
+    host: localhost
+    port: 5000
