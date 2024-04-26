@@ -9,6 +9,7 @@ import com.wnt.file.enums.EnumResponse;
 import com.wnt.file.response.BaseResponse;
 import com.wnt.file.secification.FileDinhKemSpecification;
 
+import com.wnt.file.util.FilesDto;
 import io.minio.messages.DeleteObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -57,6 +58,11 @@ public class FileController {
     public ResponseEntity<Object> upload(@ModelAttribute FileDto request) {
         return ResponseEntity.ok().body(minioService.uploadFile(request));
     }
+	@ApiOperation(value = "Upload file lên server", response = List.class)
+	@PostMapping(value = "/uploads")
+	public ResponseEntity<Object> uploads(@ModelAttribute FilesDto request) {
+		return ResponseEntity.ok().body(minioService.uploadFile(request));
+	}
 
     @ApiOperation(value = "Tải file từ server")
     @GetMapping(value = "/**")

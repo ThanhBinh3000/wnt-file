@@ -1,6 +1,7 @@
 package com.wnt.file.service;
 
 import com.wnt.file.table.FileDinhKem;
+import com.wnt.file.util.FilesDto;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.DeleteError;
@@ -76,6 +77,16 @@ public class MinioService {
                 .dataType(request.getDataType())
                 .dataId(request.getDataId())
                 .build();
+    }
+
+    public FilesDto uploadFile(FilesDto request) {
+        FilesDto result = new FilesDto();
+        result.setFiles(new ArrayList<>());
+        for(FileDto f: request.getFiles()){
+            result.getFiles().add(uploadFile(f));
+        }
+
+        return result;
     }
     private String getPreSignedUrl(String filename) {
         return filename.substring(0, filename.length() - 1);
