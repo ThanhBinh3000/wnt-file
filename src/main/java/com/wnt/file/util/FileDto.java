@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategy.LowerCaseStrategy.class)
+//@JsonNaming(PropertyNamingStrategy.LowerCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FileDto implements Serializable {
 

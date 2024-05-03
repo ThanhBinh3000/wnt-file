@@ -71,7 +71,6 @@ public class MinioService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .size(request.getFile().getSize())
-                //.url(getPreSignedUrl(request.getFile().getOriginalFilename()))
                 .url(request.getFolder() +"/"+ request.getFile().getOriginalFilename())
                 .filename(request.getFile().getOriginalFilename())
                 .dataType(request.getDataType())
